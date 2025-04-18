@@ -6,7 +6,8 @@ app = Flask(__name__)
 
 # Connect to Redis - Use environment variables for host and port
 redis_host = os.environ.get('REDIS_HOST', 'localhost')  # Redis host
-redis_port = int(os.environ.get('REDIS_PORT', 6379).split(':')[-1])  # Extract port number from the string
+redis_host = os.environ.get('REDIS_HOST', 'redis.please.svc.cluster.local')
+  # Extract port number from the string
 
 
 try:
