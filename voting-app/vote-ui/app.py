@@ -1,4 +1,4 @@
-'''import os
+import os
 from flask import Flask, render_template, Response
 import requests # For proxying
 
@@ -31,32 +31,4 @@ def proxy_vote(option):
 
 if __name__ == '__main__':
     # Port 5000 for the vote UI
-    app.run(host='0.0.0.0', port=5000, debug=True)'''
-import os
-from flask import Flask, render_template, request, jsonify
-import requests
-
-app = Flask(__name__)
-
-# Get API URL from environment variable or use default
-API_HOST = os.getenv('API_HOST', 'voteapi')
-API_PORT = os.getenv('API_PORT', '5001')
-API_URL = f"http://{API_HOST}:{API_PORT}"
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/api/vote/<option>', methods=['POST'])
-def send_vote(option):
-    vote_url = f"{API_URL}/vote/{option}"
-    app.logger.info(f"Forwarding vote to: {vote_url}")
-    try:
-        response = requests.post(vote_url, timeout=5)
-        return jsonify({"status": "success"})
-    except Exception as e:
-        app.logger.error(f"Error forwarding vote request: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 502
-
-if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
