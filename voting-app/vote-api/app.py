@@ -10,15 +10,7 @@ redis_host = os.environ.get('REDIS_HOST', 'redis.please.svc.cluster.local')
   # Extract port number from the string
 
 
-'''try:
-    r = redis.StrictRedis(host=redis_host, port=redis_port, db=0, decode_responses=True)
-    r.ping()
-    print("Connected to Redis!")
-except redis.exceptions.ConnectionError as e:
-    print(f"Could not connect to Redis: {e}")
-    # Optionally, exit or handle the error appropriately in a real app
-    # For this simple example, we'll let it proceed but endpoints will fail
-    r = None # Indicate connection failure'''
+
 try:
     r = redis.Redis(host=os.getenv('REDIS_HOST', 'redis'), 
                    port=int(os.getenv('REDIS_PORT', 6379)),
