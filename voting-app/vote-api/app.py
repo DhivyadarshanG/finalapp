@@ -5,8 +5,9 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 # Connect to Redis - Use environment variables for host and port
-redis_host = os.environ.get('REDIS_HOST', 'localhost')
-redis_port = int(os.environ.get('REDIS_PORT', 6379))
+redis_host = os.environ.get('REDIS_HOST', 'localhost')  # Redis host
+redis_port = int(os.environ.get('REDIS_PORT', 6379).split(':')[-1])  # Extract port number from the string
+
 
 try:
     r = redis.StrictRedis(host=redis_host, port=redis_port, db=0, decode_responses=True)
