@@ -1,58 +1,28 @@
-import os
-import redis
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# Connect to Redis - Use environment variables for host and port
-redis_host = os.environ.get('REDIS_HOST', 'localhost')  # Redis host
-redis_host = os.environ.get('REDIS_HOST', 'redis.please.svc.cluster.local')
-  # Extract port number from the string
-
-
-
-try:
-    r = redis.Redis(host=os.getenv('REDIS_HOST', 'redis'), 
-                   port=int(os.getenv('REDIS_PORT', 6379))
-                   password=os.environ.get('REDIS_PASSWORD'),
-                   socket_connect_timeout=2)
-    r.ping()
-except Exception as e:
-    app.logger.error(f"Could not connect to Redis: {e}")
-    redis_connection = False
+# In-memory vote storage
+votes = {
+    "cats": 0,
+    "dogs": 0
+}
 
 @app.route('/')
 def health_check():
-    if r and r.ping():
-        return "API is running and connected to Redis.\n"
-    else:
-        return "API is running but FAILED to connect to Redis.\n", 500
+    return "API is running and storing votes in memory.\n"
 
 @app.route('/vote/<option>', methods=['POST'])
 def vote(option):
-    if not r:
-        return "Redis connection not available", 500
-
-    if option not in ['cats', 'dogs']:
+    if option not in votes:
         return "Invalid option", 400
 
-    try:
-        count = r.incr(option)
-        return jsonify({"option": option, "count": count})
-    except redis.exceptions.RedisError as e:
-        return f"Redis error: {e}", 500
+    votes[option] += 1
+    return jsonify({"option": option, "count": votes[option]})
 
 @app.route('/results', methods=['GET'])
 def results():
-    if not r:
-        return "Redis connection not available", 500
-
-    try:
-        cats_count = r.get('cats') or 0
-        dogs_count = r.get('dogs') or 0
-        return jsonify({"cats": int(cats_count), "dogs": int(dogs_count)})
-    except redis.exceptions.RedisError as e:
-        return f"Redis error: {e}", 500
+    return jsonify(votes)
 
 if __name__ == '__main__':
     # Port 5001 for the API
