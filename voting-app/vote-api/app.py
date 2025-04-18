@@ -13,7 +13,8 @@ redis_host = os.environ.get('REDIS_HOST', 'redis.please.svc.cluster.local')
 
 try:
     r = redis.Redis(host=os.getenv('REDIS_HOST', 'redis'), 
-                   port=int(os.getenv('REDIS_PORT', 6379)),
+                   port=int(os.getenv('REDIS_PORT', 6379))
+                   password=os.environ.get('REDIS_PASSWORD'),
                    socket_connect_timeout=2)
     r.ping()
 except Exception as e:
